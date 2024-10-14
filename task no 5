@@ -1,0 +1,99 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from fpdf import FPDF
+
+# Simulating the hypothetical dataset
+data = {
+    'Year': [2020, 2020, 2020, 2021, 2021, 2021, 2022, 2022, 2022],
+    'State': ['Maharashtra', 'Tamil Nadu', 'Karnataka'] * 3,
+    'Number_of_Accidents': [12000, 8000, 9500, 11500, 7500, 9200, 11000, 7000, 9000],
+    'Weather_Condition': ['Clear', 'Rain', 'Fog', 'Clear', 'Rain', 'Fog', 'Clear', 'Rain', 'Fog'],
+    'Severity': [1, 2, 1, 1, 2, 3, 1, 2, 3]
+}
+
+df = pd.DataFrame(data)
+
+# Setting up the plot style
+sns.set_theme(style="whitegrid")
+
+# Create Bar Chart for Road Accidents by State
+plt.figure(figsize=(10, 6))
+sns.barplot(x='State', y='Number_of_Accidents', data=df, ci=None, palette='coolwarm')
+plt.title('Road Accidents by State in India')
+plt.xlabel('State')
+plt.ylabel('Number of Accidents')
+plt.xticks(rotation=45)
+bar_chart_path = "/mnt/data/road_accidents_by_state.png"
+plt.savefig(bar_chart_path)
+plt.close()
+
+# Create Line Chart for Road Accidents by Year
+plt.figure(figsize=(10, 6))
+sns.lineplot(data=df, x='Year', y='Number_of_Accidents', hue='State', marker='o')
+plt.title('Trend of Road Accidents in India (Yearly)')
+plt.xlabel('Year')
+plt.ylabel('Number of Accidents')
+line_chart_path = "/mnt/data/trend_of_road_accidents.png"
+plt.savefig(line_chart_path)
+plt.close()
+
+# Create Pie Chart for Weather Conditions
+weather_counts = df['Weather_Condition'].value_counts()
+plt.figure(figsize=(8, 8))
+plt.pie(weather_counts, labels=weather_counts.index, autopct='%1.1f%%', startangle=90, colors=sns.color_palette('pastel'))
+plt.title('Accidents by Weather Condition')
+plt.axis('equal')  # Equal aspect ratio ensures that pie chart is circular.
+pie_chart_path = "/mnt/data/accidents_by_weather_condition.png"
+plt.savefig(pie_chart_path)
+plt.close()
+
+# Create a PDF report
+pdf = FPDF()
+pdf.add_page()
+
+# Title
+pdf.set_font("Arial", 'B', 16)
+pdf.cell(200, 10, txt="Analyzing Indian Government Open Data", ln=True, align="C")
+pdf.ln(10)
+
+# Introduction
+pdf.set_font("Arial", size=12)
+intro = (
+    "This report provides an analysis of road accidents in India using hypothetical data. "
+    "The analysis explores how various factors such as year, state, and weather conditions affect the frequency of accidents."
+)
+pdf.multi_cell(0, 10, intro)
+pdf.ln(10)
+
+# Visualizations
+pdf.set_font("Arial", 'B', 14)
+pdf.cell(200, 10, txt="Visualizations", ln=True)
+pdf.ln(10)
+
+# Bar Chart
+pdf.set_font("Arial", 'I', 12)
+pdf.cell(200, 10, txt="1. Road Accidents by State", ln=True)
+pdf.image(bar_chart_path, x=10, w=180)  # Adjust the width as necessary
+pdf.ln(10)
+
+# Line Chart
+pdf.cell(200, 10, txt="2. Trend of Road Accidents (Yearly)", ln=True)
+pdf.image(line_chart_path, x=10, w=180)  # Adjust the width as necessary
+pdf.ln(10)
+
+# Pie Chart
+pdf.cell(200, 10, txt="3. Accidents by Weather Condition", ln=True)
+pdf.image(pie_chart_path, x=10, w=180)  # Adjust the width as necessary
+pdf.ln(10)
+
+# Summary
+pdf.set_font("Arial", 'B', 14)
+pdf.cell(200, 10, txt="Summary of Findings", ln=True)
+summary = (
+    "1. Maharashtra has the highest number of accidents among the states analyzed.\n"
+    "2. The trend of accidents appears to be decreasing over the years in this hypothetical dataset.\n"
+    "3. Clear weather conditions are associated with the highest number of accidents."
+)
+
+
