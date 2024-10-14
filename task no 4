@@ -1,0 +1,49 @@
+# Import required libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Step 1: Load the dataset (assuming CSV file format)
+# Replace 'traffic_accidents.csv' with the actual dataset path
+df = pd.read_csv('US_Accidents_Dec20.csv')
+
+# Step 2: Data Cleaning
+# Dropping columns with many missing values and irrelevant features
+df_cleaned = df.drop(columns=['ID', 'Source', 'Description', 'Number', 'Wind_Chill(F)', 'Pressure(in)', 'Precipitation(in)'])
+
+# Checking for missing values and dropping rows with missing critical data
+df_cleaned = df_cleaned.dropna(subset=['Start_Time', 'City', 'State', 'Weather_Condition', 'Severity'])
+
+# Convert 'Start_Time' to datetime
+df_cleaned['Start_Time'] = pd.to_datetime(df_cleaned['Start_Time'])
+
+# Step 3: Exploratory Data Analysis (EDA)
+# Analyzing accidents by time of day
+df_cleaned['Hour'] = df_cleaned['Start_Time'].dt.hour
+plt.figure(figsize=(10, 6))
+sns.countplot(x='Hour', data=df_cleaned, palette='coolwarm')
+plt.title('Accidents by Hour of Day')
+plt.xlabel('Hour of Day')
+plt.ylabel('Number of Accidents')
+plt.show()
+
+# Analyzing accidents by weather condition
+plt.figure(figsize=(10, 6))
+sns.countplot(y='Weather_Condition', data=df_cleaned, order=df_cleaned['Weather_Condition'].value_counts().index[:10], palette='coolwarm')
+plt.title('Accidents by Weather Condition')
+plt.xlabel('Number of Accidents')
+plt.ylabel('Weather Condition')
+plt.show()
+
+# Analyzing accidents by severity level
+plt.figure(figsize=(8, 6))
+sns.countplot(x='Severity', data=df_cleaned, palette='coolwarm')
+plt.title('Accidents by Severity Level')
+plt.xlabel('Severity Level')
+plt.ylabel('Number of Accidents')
+plt.show()
+
+# Step 4: Further analysis on location or time trends (optional)
+
+# Step 5: Summarizing Findings
+# Create a summary of key findings based on EDA.
